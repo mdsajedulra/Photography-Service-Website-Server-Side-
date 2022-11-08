@@ -11,6 +11,7 @@ app.use(express.json())
 const uri = "mongodb://0.0.0.0:27017";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 const serviceCollection = client.db("photography").collection("services");
+const reviewCollection = client.db("allReview").collection("Review");
 // photography
 // .services
 
@@ -39,13 +40,37 @@ app.get('/allservice', async (req, res) => {
 })
 app.get('/servicedetails/:id', async (req, res) => {
     const id = req.params.id;
-    console.log(id)
+    // console.log(id)
     try {
 
         const result = await serviceCollection.findOne({ _id: ObjectId(id) });
         res.send(result)
     } catch (error) {
         res.send(error.message)
+    }
+})
+// post api
+app.post('/review', async (req, res) => {
+    const data = req.body;
+    // console.log(data)
+    try {
+        const result = await reviewCollection.insertOne(data);
+
+    } catch (error) {
+        res.send(error)
+    }
+})
+// review get api
+app.get('/review/:id', async (req, res) => {
+    const id = req.params.id;
+    console.log(id)
+    try {
+        const cursor = reviewCollection.find({ reviewId: (id) });
+        const result = await cursor.toArray()
+        res.send(result)
+
+    } catch (error) {
+        res.send(error)
     }
 })
 
