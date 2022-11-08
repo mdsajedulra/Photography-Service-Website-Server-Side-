@@ -60,12 +60,26 @@ app.post('/review', async (req, res) => {
         res.send(error)
     }
 })
-// review get api
+// review get api by service id
 app.get('/review/:id', async (req, res) => {
     const id = req.params.id;
-    console.log(id)
+
     try {
         const cursor = reviewCollection.find({ reviewId: (id) });
+        const result = await cursor.toArray()
+        res.send(result)
+
+    } catch (error) {
+        res.send(error)
+    }
+})
+
+// review get api by user
+app.get('/review/user/:id', async (req, res) => {
+    const email = req.params.id;
+
+    try {
+        const cursor = reviewCollection.find({ email: (email) });
         const result = await cursor.toArray()
         res.send(result)
 
