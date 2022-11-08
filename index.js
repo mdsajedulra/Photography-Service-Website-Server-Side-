@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 const app = express()
@@ -23,6 +23,26 @@ app.get('/service', async (req, res) => {
     try {
         const cursor = serviceCollection.find({}).limit(3);
         const result = await cursor.toArray()
+        res.send(result)
+    } catch (error) {
+        res.send(error.message)
+    }
+})
+app.get('/allservice', async (req, res) => {
+    try {
+        const cursor = serviceCollection.find({});
+        const result = await cursor.toArray()
+        res.send(result)
+    } catch (error) {
+        res.send(error.message)
+    }
+})
+app.get('/servicedetails/:id', async (req, res) => {
+    const id = req.params.id;
+    console.log(id)
+    try {
+
+        const result = await serviceCollection.findOne({ _id: ObjectId(id) });
         res.send(result)
     } catch (error) {
         res.send(error.message)
