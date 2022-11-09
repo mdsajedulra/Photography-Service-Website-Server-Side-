@@ -87,6 +87,64 @@ app.get('/review/user/:id', async (req, res) => {
         res.send(error)
     }
 })
+//add service api
+app.post('/addservices', async (req, res) => {
+    try {
+        const service = req.body;
+
+        const result = await serviceCollection.insertOne(service)
+        console.log(result)
+    } catch (error) {
+        res.send(error)
+    }
+})
+//revew delete from user
+app.delete('/deletereview/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        console.log(id)
+        const result = await reviewCollection.deleteOne({ _id: ObjectId(id) })
+        // res.send(id)
+        res.send({
+            data: result,
+        })
+    } catch (error) {
+        res.send(error)
+    }
+})
+
+// get review by id
+app.get('/getreviewid/:id', async (req, res) => {
+    try {
+        const id = req.params.id
+        const result = await reviewCollection.findOne({ _id: ObjectId(id) })
+        res.send(result)
+
+    } catch (error) {
+        res.send(error)
+    }
+})
+
+
+app.patch('/reviewupdate/:id', async (req, res) => {
+    const id = req.params.id;
+    try {
+        const result = await reviewCollection.updateOne({ _id: ObjectId(id) }, { $set: req.body })
+        res.send({
+            success: true,
+            data: result
+        })
+    } catch (error) {
+        res.send({
+            success: false,
+            message: 'something wrong'
+        })
+    }
+})
+
+
+
+
 
 app.listen(port, () => {
     console.log(`Photography by Sajedul server is running on ${port}`)
