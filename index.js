@@ -1,15 +1,33 @@
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
+var jwt = require('jsonwebtoken'); // jwt require
 require('dotenv').config()   //dotenv config
 const cors = require('cors');
 const app = express()
 const port = process.env.PORT || 5000;
 // middleware
 app.use(cors());
-app.use(express.json())
+app.use(express.json());
 
+function verifyJWT(req, res, next) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        res.status(401).send({ message: 'unauthorized access' })
+    }
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+
+        if (err) {
+            res.status(401).send({ message: 'unauthorized access' })
+        }
+        req.decoded = decoded;
+        next();
+    })
+    // next()
+}
 
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6crvlzi.mongodb.net/?retryWrites=true&w=majority`;
+// console.log(uri)
 
 const uri = "mongodb://0.0.0.0:27017";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -74,10 +92,16 @@ app.get('/review/:id', async (req, res) => {
     }
 })
 
-// review get api by user
-app.get('/review/user/:id', async (req, res) => {
+// review get api by user with jwt
+app.get('/review/user/:id', verifyJWT, async (req, res) => {
     const email = req.params.id;
-
+    const decoded = req.decoded;
+    console.log(decoded)
+    console.log(req.params.id)
+    if (decoded.email !== req.params.id) {
+        res.status(403).send({ message: 'unauthorized access' })
+    }
+    // console.log(req.headers.authorization)
     try {
         const cursor = reviewCollection.find({ email: (email) });
         const result = await cursor.toArray()
@@ -91,6 +115,7 @@ app.get('/review/user/:id', async (req, res) => {
 app.post('/addservices', async (req, res) => {
     try {
         const service = req.body;
+
 
         const result = await serviceCollection.insertOne(service)
         console.log(result)
@@ -125,7 +150,7 @@ app.get('/getreviewid/:id', async (req, res) => {
     }
 })
 
-
+// review update api
 app.patch('/reviewupdate/:id', async (req, res) => {
     const id = req.params.id;
     try {
@@ -140,6 +165,20 @@ app.patch('/reviewupdate/:id', async (req, res) => {
             message: 'something wrong'
         })
     }
+})
+
+//jwt
+app.post('/jwt', (req, res) => {
+    console.log(req.headers)
+    try {
+        const user = req.body;
+        console.log(user)
+        const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+        res.send({ token })
+    } catch (error) {
+        console.log(error)
+    }
+
 })
 
 
