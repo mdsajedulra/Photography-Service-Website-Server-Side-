@@ -15,8 +15,7 @@ const uri = "mongodb://0.0.0.0:27017";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 const serviceCollection = client.db("photography").collection("services");
 const reviewCollection = client.db("allReview").collection("Review");
-// photography
-// .services
+
 
 app.get('/', (req, res) => {
     res.send('server is running')
