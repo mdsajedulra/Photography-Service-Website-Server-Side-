@@ -11,10 +11,7 @@ app.use(express.json())
 
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6crvlzi.mongodb.net/?retryWrites=true&w=majority`;
 
-// forassignment11
-// QhK8wuohhHrcFA6Y
-
-// const uri = "mongodb://0.0.0.0:27017";
+const uri = "mongodb://0.0.0.0:27017";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 const serviceCollection = client.db("photography").collection("services");
 const reviewCollection = client.db("allReview").collection("Review");
