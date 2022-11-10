@@ -27,10 +27,10 @@ function verifyJWT(req, res, next) {
     // next()
 }
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6crvlzi.mongodb.net/?retryWrites=true&w=majority`;
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6crvlzi.mongodb.net/?retryWrites=true&w=majority`;
 
 // for local server
-// const uri = "mongodb://0.0.0.0:27017";
+const uri = "mongodb://0.0.0.0:27017";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 const serviceCollection = client.db("photography").collection("services");
 const reviewCollection = client.db("allReview").collection("Review");
@@ -41,8 +41,10 @@ app.get('/', (req, res) => {
 })
 app.get('/service', async (req, res) => {
     try {
-        const cursor = serviceCollection.find({}).limit(3);
+        // const cursor = serviceCollection.find({}).limit(3);
+        const cursor = serviceCollection.find().sort({ $natural: -1 }).limit(3)
         const result = await cursor.toArray()
+        // const reverse = [...result.reverse()]
         res.send(result)
     } catch (error) {
         res.send(error.message)
@@ -74,6 +76,7 @@ app.post('/review', async (req, res) => {
     // console.log(data)
     try {
         const result = await reviewCollection.insertOne(data);
+        restart.send(result)
 
     } catch (error) {
         res.send(error)
