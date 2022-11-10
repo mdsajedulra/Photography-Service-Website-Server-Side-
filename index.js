@@ -108,7 +108,8 @@ app.get('/review/user/:id', verifyJWT, async (req, res) => {
     try {
         const cursor = reviewCollection.find({ email: (email) });
         const result = await cursor.toArray()
-        res.send(result)
+        const reverse = [...result.reverse()]
+        res.send(reverse)
 
     } catch (error) {
         res.send(error)
@@ -119,7 +120,6 @@ app.post('/addservices', async (req, res) => {
     try {
         const service = req.body;
         const result = await serviceCollection.insertOne(service)
-        console.log(result)
         res.send(result)
     } catch (error) {
         res.send(error)
