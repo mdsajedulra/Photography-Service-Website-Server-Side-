@@ -15,6 +15,7 @@ function verifyJWT(req, res, next) {
         res.status(401).send({ message: 'unauthorized access' })
     }
     const token = authHeader.split(' ')[1];
+
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
 
         if (err) {
@@ -26,10 +27,10 @@ function verifyJWT(req, res, next) {
     // next()
 }
 
-// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6crvlzi.mongodb.net/?retryWrites=true&w=majority`;
-// console.log(uri)
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6crvlzi.mongodb.net/?retryWrites=true&w=majority`;
 
-const uri = "mongodb://0.0.0.0:27017";
+// for local server
+// const uri = "mongodb://0.0.0.0:27017";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 const serviceCollection = client.db("photography").collection("services");
 const reviewCollection = client.db("allReview").collection("Review");
@@ -96,8 +97,10 @@ app.get('/review/:id', async (req, res) => {
 app.get('/review/user/:id', verifyJWT, async (req, res) => {
     const email = req.params.id;
     const decoded = req.decoded;
-    console.log(decoded)
-    console.log(req.params.id)
+    // console.log(decoded)
+    // console.log(req.params.id)
+
+    // console.log(decoded.email, req.params.id)
     if (decoded.email !== req.params.id) {
         res.status(403).send({ message: 'unauthorized access' })
     }
@@ -115,10 +118,9 @@ app.get('/review/user/:id', verifyJWT, async (req, res) => {
 app.post('/addservices', async (req, res) => {
     try {
         const service = req.body;
-
-
         const result = await serviceCollection.insertOne(service)
         console.log(result)
+        res.send(result)
     } catch (error) {
         res.send(error)
     }
